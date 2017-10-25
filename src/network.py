@@ -8,7 +8,7 @@ class Network(object):
 
     def __init__(self, layers):
         r"""
-        By default, all layers are linear, the non linearities are added as new layers.
+        By default, all layers are linear, the non linearities in form of activations are added as new layers.
 
         :params layers: a list of dictionaries containing the definition of layers
         """
@@ -16,9 +16,9 @@ class Network(object):
         self.num_layers = len(layers)
         if layers[0]['type'] != Layers.INPUT:
             raise ValueError("the first layer must be input layer")
-        for layer in layers:
+        for idx, layer in enumerate(layers):
             self.layers.append(layer['type'](**layer))
-            if layer['activation']:
+            if layer.get('activation'):
                 self.layers.append(layer['activation'](**layer))
 
     def forward(self, x, is_training=False):
