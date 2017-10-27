@@ -1,2 +1,3 @@
 class Layer(object):
-    pass
+    def get_params_and_grads(self):
+        return []

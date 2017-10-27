@@ -29,6 +29,10 @@ class FullyConnectedLayer(Layer):
         return self.output_activations
 
     def backward(self):
-        self.weights.gradients = np.dot(self.output_activations.gradients.T, self.weights.data)
-        self.biases.gradients = self.output_activations.gradients
-        self.input_activations.gradients = np.dot(self.output_activations, self.input_activations.data.T)
+
+        self.weights.gradients = np.dot(self.output_activations.gradients, self.input_activations.data.T)
+        self.biases.gradients = np.sum(self.output_activations.gradients, axis=1, keepdims=True)
+        self.input_activations.gradients = np.dot(self.weights.T, self.output_activations.gradients)
+
+    def get_params_and_grads(self):
+        return [self.weights, self.biases]

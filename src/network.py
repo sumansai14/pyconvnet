@@ -14,7 +14,6 @@ class Network(object):
         :params layers: a list of dictionaries containing the definition of layers
         """
         self.layers = []
-        self.num_layers = len(layers)
         self.loss_function = loss()
         if layers[0]['type'] != Layers.INPUT:
             raise ValueError("the first layer must be input layer")
@@ -22,6 +21,7 @@ class Network(object):
             self.layers.append(layer['type'].value(**layer))
             if layer.get('activation'):
                 self.layers.append(layer['activation'].value(**layer))
+        self.num_layers = len(self.layers)
 
     def forward(self, x, is_training=False):
         r"""
@@ -42,3 +42,11 @@ class Network(object):
         for l in range(1, self.num_layers):
             self.layers[-l].backward()
         return loss
+
+    def get_params_and_grads(self):
+        params = []
+        for idx, layer in enumerate(self.layers):
+            # print(idx)
+            params += layer.get_params_and_grads()
+        return params
+

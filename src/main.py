@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from optimizers.minibatchgd import MiniBatchGradientDescent
 from network import Network
 from datasets import MNISTDataSet
 from layers import Layers, Activations
@@ -12,6 +13,5 @@ if __name__ == '__main__':
     ]
 
     network = Network(layers)
-    # mini_batches = [train_x[k:k + 10] for k in xrange(0, train_x.shape(0), 10)]
-    a = network.forward(train_x[:20].T)
-    b = network.backward(a, train_y[:20].T)
+    optimizer = MiniBatchGradientDescent(network)
+    optimizer.train(train_x.T, train_y.T, 30, 30, learning_rate=3.0)
