@@ -1,12 +1,13 @@
 """Definition of network class can be found in this file. WIll add a lot of todos later."""
-from .layers import Layers
-from exceptions import ValueError
+from __future__ import absolute_import
+from layers import Layers
+from loss import MSELoss
 
 
 class Network(object):
     r"""A neural network which takes in layer definitions and constructs the network."""
 
-    def __init__(self, layers):
+    def __init__(self, layers, loss=MSELoss):
         r"""
         By default, all layers are linear, the non linearities in form of activations are added as new layers.
 
@@ -14,12 +15,13 @@ class Network(object):
         """
         self.layers = []
         self.num_layers = len(layers)
+        self.loss_function = loss()
         if layers[0]['type'] != Layers.INPUT:
             raise ValueError("the first layer must be input layer")
         for idx, layer in enumerate(layers):
-            self.layers.append(layer['type'](**layer))
+            self.layers.append(layer['type'].value(**layer))
             if layer.get('activation'):
-                self.layers.append(layer['activation'](**layer))
+                self.layers.append(layer['activation'].value(**layer))
 
     def forward(self, x, is_training=False):
         r"""
@@ -32,3 +34,11 @@ class Network(object):
         for layer in self.layers[1:]:
             activation = layer.forward(activation, is_training)
         return activation
+
+    def backward(self, x, y):
+        loss = self.loss_function.forward(x, y)
+        self.loss_function.backward(y)
+        # Layerwise loss
+        for l in range(1, self.num_layers):
+            self.layers[-l].backward()
+        return loss

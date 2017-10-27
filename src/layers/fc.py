@@ -1,4 +1,5 @@
 from .baselayer import Layer
+from .vector import Vector
 import numpy as np
 
 
@@ -17,17 +18,17 @@ class FullyConnectedLayer(Layer):
         self.params = kwargs
         self.output_len = kwargs['num_neurons']
         self.input_len = kwargs['input_len']
-        self.weights = np.random.randn(self.output_len, self.input_len)
-        self.dw = np.zeros((self.output_len, self.input_len))
-        self.biases = np.zeros((self.output_len, 1))
-        self.db = None  # We don't actually need to store this since we are going to do the bias trick
+        self.weights = Vector(data=np.random.randn(self.output_len, self.input_len))
+        self.biases = Vector(data=np.zeros((self.output_len, 1)))
         self.input_activations = None
-        self.output_activations = None
+        self.output_activations = Vector()
 
     def forward(self, x, is_training):
         self.input_activations = x
-        self.output_activations = np.dot(self.weights, x) + self.biases
+        self.output_activations.data = np.dot(self.weights.data, x.data) + self.biases.data
         return self.output_activations
 
-    # def backward(self):
-        
+    def backward(self):
+        self.weights.gradients = np.dot(self.output_activations.gradients.T, self.weights.data)
+        self.biases.gradients = self.output_activations.gradients
+        self.input_activations.gradients = np.dot(self.output_activations, self.input_activations.data.T)

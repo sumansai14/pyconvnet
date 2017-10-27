@@ -3,10 +3,10 @@ import os
 import numpy as np
 from struct import unpack
 import gzip
-import cPickle
+import pickle
 
 
-def vectorized_result(self, j):
+def vectorized_result(j):
     """Return a 10-dimensional unit vector with a 1.0 in the jth
     position and zeroes elsewhere.  This is used to convert a digit
     (0...9) into a corresponding desired output from the neural
@@ -33,16 +33,18 @@ class MNISTDataSet(object):
             self.fetch_data()
         return self.load_data()
 
-    def wrap_data(tr_d, va_d, te_d):
-        training_inputs = [np.reshape(x, (784, 1)) for x in tr_d[0]]
-        training_results = [vectorized_result(y) for y in tr_d[1]]
-        training_data = zip(training_inputs, training_results)
+    def wrap_data(self, tr_d, va_d, te_d):
+        train_x = np.array([np.reshape(x, (784, 1)) for x in tr_d[0]])
+        train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1]))
+        train_y = np.array([vectorized_result(y) for y in tr_d[1]])
+        train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
         validation_inputs = [np.reshape(x, (784, 1)) for x in va_d[0]]
         validation_data = zip(validation_inputs, va_d[1])
-        test_inputs = [np.reshape(x, (784, 1)) for x in te_d[0]]
-        test_results = [vectorized_result(y) for y in te_d[1]]
-        test_data = zip(test_inputs, test_results)
-        return (training_data, validation_data, test_data)
+        test_x = np.array([np.reshape(x, (784, 1)) for x in te_d[0]])
+        test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1]))
+        test_y = np.array([vectorized_result(y) for y in te_d[1]])
+        test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
+        return (train_x, train_y, validation_data, test_x, test_y)
 
     def load_data(self):
         if len(os.listdir(self.path)) == 4:
@@ -71,7 +73,7 @@ class MNISTDataSet(object):
             below.
             """
             f = gzip.open(self.path + 'mnist.pkl.gz', 'rb')
-            training_data, validation_data, test_data = cPickle.load(f)
+            training_data, validation_data, test_data = pickle.load(f, encoding='bytes')
             f.close()
             return self.wrap_data(training_data, validation_data, test_data)
 
