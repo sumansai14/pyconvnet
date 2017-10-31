@@ -15,8 +15,9 @@ class InputLayer(Layer):
         """
         # check the type of array and change it to numpy array if it is an array
         self.params = kwargs
-        self.input_len = kwargs['input_len']
-        self.output_len = kwargs['input_len']
+        self.input_len = kwargs.get('input_len')
+        self.output_len = kwargs.get('input_len')
+        self.dimensions = kwargs.get('dimensions')
         self.input_activations = Vector()
         self.output_activations = Vector()
 
@@ -27,9 +28,9 @@ class InputLayer(Layer):
         :param x: an nd array or dimensions(dimensions of image, num_inputs)
         """
         # Check the dimensionality of the input here
-        if type(x) == list:
-            x = np.array(x)
-        assert x.shape[0] == self.input_len, x.shape
+        # if type(x) == list:
+        # x = np.array(x)
+        assert ((x.shape[1], x.shape[2], x.shape[3]) == self.dimensions)
         self.input_activations.data = x
         self.output_activations.data = x
         return self.output_activations

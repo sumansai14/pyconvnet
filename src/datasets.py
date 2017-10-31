@@ -17,7 +17,8 @@ def vectorized_result(j):
 
 
 class MNISTDataSet(object):
-    path = '../data/mnist/'
+    absolute_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_path = 'data/mnist/'
     urls = [
         'http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz',
         'http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz',
@@ -28,9 +29,9 @@ class MNISTDataSet(object):
     @property
     def data(self):
         file_name = self.urls[0].split('/')[-1]
-        if not os.path.exists(self.path + file_name):
+        if not os.path.exists(os.path.join(self.absolute_path, self.data_path, file_name)):
             print("Data is not present, Downloading now...")
-            self.fetch_data()
+            # self.fetch_data()
         return self.load_data()
 
     def wrap_data(self, tr_d, va_d, te_d):
@@ -47,7 +48,7 @@ class MNISTDataSet(object):
         return (train_x, train_y, validation_data, test_x, test_y)
 
     def load_data(self):
-        if len(os.listdir(self.path)) == 4:
+        if len(os.listdir(os.path.join(self.absolute_path, self.data_path))) == 4:
             pass
         else:
             """Return the MNIST data as a tuple containing the training data,
@@ -72,14 +73,14 @@ class MNISTDataSet(object):
             That's done in the wrapper function ``load_data_wrapper()``, see
             below.
             """
-            f = gzip.open(self.path + 'mnist.pkl.gz', 'rb')
+            f = gzip.open(os.path.join(self.absolute_path, self.data_path, 'mnist.pkl.gz'), 'rb')
             training_data, validation_data, test_data = pickle.load(f, encoding='bytes')
             f.close()
             return self.wrap_data(training_data, validation_data, test_data)
 
     def fetch_data(self):
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
+        if not os.path.exists(os.path.join(self.absolute_path, self.data_path)):
+            os.makedirs(os.path.join(self.absolute_path, self.data_path))
         for url in self.urls:
             file_name = url.split('/')[-1]
             r = requests.get(url, stream=True)

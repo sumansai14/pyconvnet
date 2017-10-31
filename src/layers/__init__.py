@@ -1,19 +1,19 @@
-# from .conv import ConvLayer
+from .conv import ConvLayer
 from .inputl import InputLayer
 from .fc import FullyConnectedLayer
-from .nonlinearities import SigmoidLayer
+from .nonlinearities import SigmoidLayer, ReLULayer
 
 
 from enum import Enum
 
 
 class Layers(Enum):
-    # CONV = ConvLayer
+    CONV = ConvLayer
     INPUT = InputLayer
     FC = FullyConnectedLayer
 
 
 class Activations(Enum):
-#     RELU = ReLULayer
+    RELU = ReLULayer
     SIGMOID = SigmoidLayer
-#     TANH = TanhLayer
+    # TANH = TanhLayer
