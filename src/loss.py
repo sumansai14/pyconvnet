@@ -12,7 +12,8 @@ class MSELoss(object):
     def forward(self, x, y):
         self.input_activations = x
         self.output_activations.data = np.mean((x.data - y).dot((x.data - y).T)) / 2.0
-        return self.output_activations
+        accuracy = np.mean(np.argmax(x.data, axis=0) == np.argmax(y, axis=0))
+        return accuracy, self.output_activations
 
     def backward(self, y):
         self.input_activations.gradients = (self.input_activations.data - y)

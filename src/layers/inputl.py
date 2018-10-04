@@ -30,7 +30,7 @@ class InputLayer(Layer):
         # Check the dimensionality of the input here
         # if type(x) == list:
         # x = np.array(x)
-        assert ((x.shape[1], x.shape[2], x.shape[3]) == self.dimensions)
+        # assert ((x.shape[1], x.shape[2], x.shape[3]) == self.dimensions)
         self.input_activations.data = x
         self.output_activations.data = x
         return self.output_activations

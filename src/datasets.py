@@ -1,9 +1,10 @@
 import requests
 import os
 import numpy as np
-from struct import unpack
+import struct
+from collections import defaultdict as ddict
 import gzip
-import pickle
+import ipdb as pdb
 
 
 def vectorized_result(j):
@@ -16,7 +17,21 @@ def vectorized_result(j):
     return e
 
 
-class MNISTDataSet(object):
+class Dataset(object):
+
+    train = None
+    test = None
+    valid = None
+
+    def __init__(self, *args, **kwargs):
+        super(Dataset, self).__init__(*args, **kwargs)
+        self.load_data()
+
+    def load_data(self):
+        raise NotImplementedError()
+
+
+class MNISTDataSet(Dataset):
     absolute_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     data_path = 'data/mnist/'
     urls = [
@@ -31,7 +46,7 @@ class MNISTDataSet(object):
         file_name = self.urls[0].split('/')[-1]
         if not os.path.exists(os.path.join(self.absolute_path, self.data_path, file_name)):
             print("Data is not present, Downloading now...")
-            # self.fetch_data()
+            self.fetch_data()
         return self.load_data()
 
     def wrap_data(self, tr_d, va_d, te_d):
@@ -48,8 +63,8 @@ class MNISTDataSet(object):
         return (train_x, train_y, validation_data, test_x, test_y)
 
     def load_data(self):
-        if len(os.listdir(os.path.join(self.absolute_path, self.data_path))) == 4:
-            pass
+        if len(os.listdir(os.path.join(self.absolute_path, self.data_path))) != 4:
+            raise IOError("dataset not found")
         else:
             """Return the MNIST data as a tuple containing the training data,
             the validation data, and the test data.
@@ -73,18 +88,33 @@ class MNISTDataSet(object):
             That's done in the wrapper function ``load_data_wrapper()``, see
             below.
             """
-            f = gzip.open(os.path.join(self.absolute_path, self.data_path, 'mnist.pkl.gz'), 'rb')
-            training_data, validation_data, test_data = pickle.load(f, encoding='bytes')
-            f.close()
-            return self.wrap_data(training_data, validation_data, test_data)
+            # Get paths of the images and labels
+            dataset = ddict(dict)
+            dataset['train']['img_path'] = os.path.join(self.absolute_path, self.data_path, 'train-images-idx3-ubyte.gz')
+            dataset['train']['lbl_path'] = os.path.join(self.absolute_path, self.data_path, 'train-labels-idx1-ubyte.gz')
+            dataset['test']['img_path'] = os.path.join(self.absolute_path, self.data_path, 't10k-images-idx3-ubyte.gz')
+            dataset['test']['lbl_path'] = os.path.join(self.absolute_path, self.data_path, 't10k-labels-idx1-ubyte.gz')
 
-    def fetch_data(self):
+            for split in ['train', 'test']:
+                with gzip.open(dataset[split]['lbl_path'], 'rb') as f:
+                    magic, num = struct.unpack(">II", f.read(8))
+                    dataset[split]['labels'] = np.frombuffer(f.read(), dtype=np.int8)
+                with gzip.open(dataset[split]['img_path'], 'rb') as f:
+                    magic, num, rows, cols = struct.unpack(">IIII", f.read(16))
+                    dataset[split]['images'] = np.frombuffer(f.read(), dtype=np.uint8).reshape(len(dataset[split]['labels']), rows, cols)
+
+            self.train = list(zip(dataset['train']['images'][:50000], dataset['train']['labels'][:50000]))
+            self.valid = list(zip(dataset['train']['images'][50000:], dataset['train']['labels'][50000:]))
+            self.test = list(zip(dataset['test']['images'], dataset['test']['labels']))
+            return
+
+    def fetch_data(self, force=False):
         if not os.path.exists(os.path.join(self.absolute_path, self.data_path)):
             os.makedirs(os.path.join(self.absolute_path, self.data_path))
         for url in self.urls:
             file_name = url.split('/')[-1]
             r = requests.get(url, stream=True)
             if r.status_code == 200:
-                with open(self.path + file_name, 'wb') as f:
+                with open(os.path.join(self.absolute_path, self.data_path, file_name), 'wb') as f:
                     for chunk in r.iter_content(1024):
                         f.write(chunk)

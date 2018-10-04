@@ -36,12 +36,12 @@ class Network(object):
         return activation
 
     def backward(self, x, y):
-        loss = self.loss_function.forward(x, y)
+        accuracy, loss = self.loss_function.forward(x, y)
         self.loss_function.backward(y)
         # Layerwise loss
         for l in range(1, self.num_layers):
             self.layers[-l].backward()
-        return loss
+        return accuracy, loss
 
     def get_params_and_grads(self):
         params = []

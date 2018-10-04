@@ -29,7 +29,6 @@ class ConvLayer(Layer):
         height = 1 + ((x.shape[2] + (2 * self.padding) - self.fshape[2]) / self.stride)
         width = 1 + ((x.shape[3] + (2 * self.padding) - self.fshape[3]) / self.stride)
         output_shape = (x.shape[0], self.fshape[0], int(height), int(width))
-        print(output_shape)
         data = np.zeros(output_shape)
         p = self.padding
         x_pad = np.lib.pad(x.data, ((0, 0), (0, 0), (p, p), (p, p)), 'constant', constant_values=0)
@@ -43,4 +42,6 @@ class ConvLayer(Layer):
         return self.output_activations
 
     def backward(self):
-        print("nothing backward here")
+        r"""
+        We're storing gradients of 
+        """
