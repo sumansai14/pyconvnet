@@ -3,7 +3,7 @@ from .vector import Vector
 import numpy as np
 
 
-class FullyConnectedLayer(Layer):
+class FlattenLayer(Layer):
     r"""We first write the fully connectedlayer first and later abstract away the common parts to the baselayer."""
 
     def __init__(self, *args, **kwargs):
@@ -18,9 +18,9 @@ class FullyConnectedLayer(Layer):
         self.params = kwargs
         self.output_len = kwargs['num_neurons']
         self.input_len = kwargs['input_len']
-        self.weights = Vector(data=np.random.randn(self.output_len, self.input_len))
+        self.weights = Vector(data=np.zeros((self.output_len, self.input_len)))
         self.biases = Vector(data=np.zeros((self.output_len, 1)))
-        self.input_activations = None
+        self.input_activations = Vector()
         self.output_activations = Vector()
 
     def forward(self, x, is_training):
@@ -28,16 +28,14 @@ class FullyConnectedLayer(Layer):
         if len(x.data.shape) == 4:
             # This is a hack - this is coming from a conv. Flatten it.
             self.input_activations.data = x.data.reshape(x.data.shape[0], x.data.shape[1])
-        else:
-            self.input_activations = x
-        self.output_activations.data = np.dot(self.weights.data, x.data) + self.biases.data
+        self.output_activations.data = self.input_activations.data
         return self.output_activations
 
     def backward(self):
 
-        self.weights.gradients = np.dot(self.output_activations.gradients, self.input_activations.data.T)
-        self.biases.gradients = np.sum(self.output_activations.gradients, axis=1, keepdims=True)
-        self.input_activations.gradients = np.dot(self.weights.T, self.output_activations.gradients)
+        self.weights.gradients = np.zeros(self.weights.data.shape)
+        self.biases.gradients = np.zeros(self.biases.data.shape)
+        self.input_activations.gradients = self.output_activations.gradients
 
     def get_params_and_grads(self):
         return [self.weights, self.biases]

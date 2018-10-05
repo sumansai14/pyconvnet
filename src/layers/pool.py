@@ -25,14 +25,15 @@ class MaxPool(Layer):
         self.input_activations = x
         n, c, h1, w1 = x.data.shape
         s = self.stride
-        w2 = 1 + ((w1 - self.length) / s)
-        h2 = 1 + ((h1 - self.length) / s)
+        w2 = int(1 + ((w1 - self.length) / s))
+        h2 = int(1 + ((h1 - self.length) / s))
         data = np.zeros((n, c, w2, h2))
+        # print((n, c, w2, h2))
         for n in range(x.shape[0]):
             for c in range(x.shape[1]):
                 for h in range(0, x.shape[2], s):
                     for w in range(0, x.shape[3], s):
-                        data[n, c, int(h / s), int(w / s)] = np.max(x[n, c, h:h + self.length, w:w + self.length])
+                        data[n, c, h * s:h * s + self.length, w * self.length:w + self.length] = np.max(x.data[n, c, h:h + self.length, w:w + self.length])
         self.output_activations.data = data
         return self.output_activations
 

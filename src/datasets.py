@@ -98,7 +98,6 @@ class MNISTDataSet(Dataset):
                     dataset[split]['labels'] = np.frombuffer(f.read(), dtype=np.int8)
                     # dimension normalization
                     dataset[split]['labels'] = dataset[split]['labels'].reshape(dataset[split]['labels'].shape[0], 1)
-                    print(dataset[split]['labels'].shape)
                 with gzip.open(dataset[split]['img_path'], 'rb') as f:
                     magic, num, rows, cols = struct.unpack(">IIII", f.read(16))
                     dataset[split]['images'] = np.frombuffer(f.read(), dtype=np.uint8).reshape(len(dataset[split]['labels']), rows, cols)

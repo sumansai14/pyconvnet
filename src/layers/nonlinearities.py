@@ -30,5 +30,20 @@ class ReLULayer(Layer):
         return self.output_activations
 
     def backward(self):
-        gradients = 1. * (self.output_activations > 0)
+        gradients = 1. * (self.output_activations.data >= 0)
         self.input_activations.gradients = self.output_activations.gradients * gradients
+
+
+# class SoftMax(Layer):
+#     def __init__(self, *args, **kwargs):
+#         self.input_activations = None
+#         self.output_activations = Vector()
+
+#     def forward(self, x, is_training):
+#         self.input_activations = x
+#         self.output_activations.data = np.maximum(x.data, 0)
+#         return self.output_activations
+
+#     def backward(self):
+#         gradients = 1. * (self.output_activations > 0)
+#         self.input_activations.gradients = self.output_activations.gradients * gradients
