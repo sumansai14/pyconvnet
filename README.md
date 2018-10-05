@@ -12,6 +12,8 @@ The project is structured as follows:
 
 ## Optimizers
 
+Implemented a Minibatch SGD (which takes batch size and learning rates as hyperparameters and updates parameters).
+
 ## Datasets
 The idea of datasets like in every other library is to have standard datasets available. Non standard datasets can also be implemented by subclassing `pyconvnet.datasets.Dataset`. In the future, we'd like to add some nice properties to this which would make it easier to work with estimators (dimensions et al)
 

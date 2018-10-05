@@ -7,17 +7,15 @@ import gzip
 import ipdb as pdb
 
 
-def vectorized_result(j):
-    """Return a 10-dimensional unit vector with a 1.0 in the jth
-    position and zeroes elsewhere.  This is used to convert a digit
-    (0...9) into a corresponding desired output from the neural
-    network."""
-    e = np.zeros((10, 1))
-    e[j] = 1.0
-    return e
-
-
 class Dataset(object):
+    """
+    Every dataset which subclasses this gives the test, train and valid data in pairwise (features, labels) tuple.
+
+    Need to implement the following functions:
+    1. an iterator on top of entire data
+    2. a batch iterator which has the capability to shuffle
+
+    """
 
     train = None
     test = None
@@ -28,6 +26,18 @@ class Dataset(object):
         self.load_data()
 
     def load_data(self):
+        raise NotImplementedError()
+
+    def batches(self, batch_size, axis=0, shuffle=False):
+        self.randomize()
+        n = self.train[0].shape[axis]
+        for k in range(0, n, batch_size):
+            yield (
+                self.train[0].take(indices=range(k, min(k + batch_size, n)), axis=axis),
+                self.train[1].take(indices=range(k, min(k + batch_size, n)), axis=axis)
+            )
+
+    def randomize(self):
         raise NotImplementedError()
 
 
@@ -48,19 +58,6 @@ class MNISTDataSet(Dataset):
             print("Data is not present, Downloading now...")
             self.fetch_data()
         return self.load_data()
-
-    def wrap_data(self, tr_d, va_d, te_d):
-        train_x = np.array([np.reshape(x, (784, 1)) for x in tr_d[0]])
-        train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1]))
-        train_y = np.array([vectorized_result(y) for y in tr_d[1]])
-        train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
-        validation_inputs = [np.reshape(x, (784, 1)) for x in va_d[0]]
-        validation_data = zip(validation_inputs, va_d[1])
-        test_x = np.array([np.reshape(x, (784, 1)) for x in te_d[0]])
-        test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1]))
-        test_y = np.array([vectorized_result(y) for y in te_d[1]])
-        test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
-        return (train_x, train_y, validation_data, test_x, test_y)
 
     def load_data(self):
         if len(os.listdir(os.path.join(self.absolute_path, self.data_path))) != 4:
@@ -99,13 +96,16 @@ class MNISTDataSet(Dataset):
                 with gzip.open(dataset[split]['lbl_path'], 'rb') as f:
                     magic, num = struct.unpack(">II", f.read(8))
                     dataset[split]['labels'] = np.frombuffer(f.read(), dtype=np.int8)
+                    # dimension normalization
+                    dataset[split]['labels'] = dataset[split]['labels'].reshape(dataset[split]['labels'].shape[0], 1)
+                    print(dataset[split]['labels'].shape)
                 with gzip.open(dataset[split]['img_path'], 'rb') as f:
                     magic, num, rows, cols = struct.unpack(">IIII", f.read(16))
                     dataset[split]['images'] = np.frombuffer(f.read(), dtype=np.uint8).reshape(len(dataset[split]['labels']), rows, cols)
 
-            self.train = list(zip(dataset['train']['images'][:50000], dataset['train']['labels'][:50000]))
-            self.valid = list(zip(dataset['train']['images'][50000:], dataset['train']['labels'][50000:]))
-            self.test = list(zip(dataset['test']['images'], dataset['test']['labels']))
+            self.train = (dataset['train']['images'][:50000], dataset['train']['labels'][:50000])
+            self.valid = (dataset['train']['images'][50000:], dataset['train']['labels'][50000:])
+            self.test = (dataset['test']['images'], dataset['test']['labels'])
             return
 
     def fetch_data(self, force=False):
@@ -118,3 +118,8 @@ class MNISTDataSet(Dataset):
                 with open(os.path.join(self.absolute_path, self.data_path, file_name), 'wb') as f:
                     for chunk in r.iter_content(1024):
                         f.write(chunk)
+
+    def randomize(self, axis=0):
+        permuation = np.random.permutation(self.train[0].shape[axis])
+        self.train = (self.train[0].take(indices=permuation, axis=axis), self.train[1].take(indices=permuation, axis=axis))
+        return
