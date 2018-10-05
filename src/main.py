@@ -23,7 +23,7 @@ def transform_data(x, y):
     # print(x.shape)
     x = np.reshape(x, (x.shape[0], 1, x.shape[1], x.shape[2]))
     y = onehot(y, 10)
-    print(y.shape)
+    # print(y.shape)
     # y = np.reshape(y, (y.shape[0], y.shape[1], 1, 1))
     # print(x.shape, y.shape)
     return x, y

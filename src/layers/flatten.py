@@ -20,22 +20,22 @@ class FlattenLayer(Layer):
         self.input_len = kwargs['input_len']
         self.weights = Vector(data=np.zeros((self.output_len, self.input_len)))
         self.biases = Vector(data=np.zeros((self.output_len, 1)))
-        self.input_activations = Vector()
+        self.input_activations = None
         self.output_activations = Vector()
 
     def forward(self, x, is_training):
-        print(x.data.shape)
+        # print(x.data.shape)
         if len(x.data.shape) == 4:
             # This is a hack - this is coming from a conv. Flatten it.
-            self.input_activations.data = x.data.reshape(x.data.shape[0], x.data.shape[1])
-        self.output_activations.data = self.input_activations.data
+            self.input_activations = x
+        self.output_activations.data = np.reshape(self.input_activations.data, (x.data.shape[0], x.data.shape[1]))
         return self.output_activations
 
     def backward(self):
 
         self.weights.gradients = np.zeros(self.weights.data.shape)
         self.biases.gradients = np.zeros(self.biases.data.shape)
-        self.input_activations.gradients = self.output_activations.gradients
+        self.input_activations.gradients = self.output_activations.gradients.reshape(self.input_activations.data.shape)
 
     def get_params_and_grads(self):
         return [self.weights, self.biases]
