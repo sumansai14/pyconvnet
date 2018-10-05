@@ -1,6 +1,6 @@
 ### pyconvnet ###
 
-A Neural network library primarily to learn differentiable programming (Would not be restricted to just neural networks though) in python inspired from karapathys convnetjs, some nice features from tensorflow and torch/pytorch's autograd structure. (Tried to get the best of all worlds)
+A Neural network library primarily to learn differentiable programming (Would not be restricted to just neural networks though) in python inspired from karapathys convnetjs, some nice features from tensorflow and torch/pytorch's autograd structure. (Tried to get the best of all worlds). Please check `main.py` to see how to implement a basic neural network.
 
 This project currently is only implemented in CPU, although I would very much like to implement GPU versions in the future (Just to learn how GPUs work.)
 
