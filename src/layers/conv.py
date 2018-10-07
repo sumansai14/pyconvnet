@@ -56,30 +56,21 @@ class ConvLayer(Layer):
         x_gradients = np.zeros(x_pad.shape)
         w_gradients = np.zeros(self.fweights.shape)
         b_gradients = np.zeros(self.fbiases.shape)
-        print(self.input_activations.data.shape)
-        print(x_pad.shape)
-        print(self.fweights.shape)
-        print(self.output_activations.data.shape)
-        print(self.output_activations.gradients.shape)
-        print(self.fshape)
         for n in range(self.input_activations.shape[0]):
             for f in range(self.fshape[0]):
                 for h in range(0, x.data.shape[2], self.stride):
                     for w in range(0, x.data.shape[3], self.stride):
-                        print(x_gradients[n, f, h:h + self.fshape[2], w:w + self.fshape[3]].shape)
-                        print((x_gradients[n, f, h:h + self.fshape[2], w:w + self.fshape[3]] + (self.output_activations.gradients[n, f, h, w] * self.fweights.data[f, :, :, :])).shape)
-                        # print(self.fweights.data[f, :, :, :].shape)
-                        x_gradients[n, f, h:h + self.fshape[2], w:w + self.fshape[3]] += self.output_activations.gradients[n, f, h, w] * self.fweights.data[f, :, :, :]
+                        x_gradients[n, :, h:h + self.fshape[2], w:w + self.fshape[3]] += self.output_activations.gradients[n, f, int(h / self.stride), int(w / self.stride)] * self.fweights.data[f, :, :, :]
         # Delete Padding to match shapes
-        delete_height = range(self.padding) + range(x.shape[2] + self.padding, x.shape[2] + (2 * self.padding), 1)
-        delete_width = range(self.padding) + range(x.shape[3] + self.padding, x.shape[3] + (2 * self.padding), 1)
+        delete_height = np.array(range(self.padding)) + np.array(range(x.shape[2] + self.padding, x.shape[2] + (2 * self.padding), 1))
+        delete_width = np.array(range(self.padding)) + np.array(range(x.shape[3] + self.padding, x.shape[3] + (2 * self.padding), 1))
         np.delete(x_gradients, delete_height, axis=2)
         np.delete(x_gradients, delete_width, axis=3)
         for n in range(self.input_activations.shape[0]):
             for f in range(self.fshape[0]):
                 for h_f in range(0, self.output_activations.gradients.shape[2]):
                     for w_f in range(0, self.output_activations.gradients.shape[3]):
-                        w_gradients[n, :, :, :] += self.output_activations.gradients[n, f, h, w] + x_pad[n, :, h_f * self.stride: h_f * self.stride + self.fshape[2], w_f * self.stride:w_f * self.stride + self.fshape[3]]
+                        w_gradients[f, :, :, :] += self.output_activations.gradients[n, f, h, w] + x_pad[n, :, h_f * self.stride: h_f * self.stride + self.fshape[2], w_f * self.stride:w_f * self.stride + self.fshape[3]]
 
         for f in range(self.fshape[0]):
             b_gradients[f] = np.sum(self.output_activations.gradients[:, f, :, :])

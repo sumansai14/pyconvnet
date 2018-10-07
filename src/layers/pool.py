@@ -55,5 +55,5 @@ class MaxPool(Layer):
                     for w in range(w1):
                         x_pool = self.input_activations.data[n, c, h * s:h * s + l1, w * s:w * s + l1]
                         mask = (x_pool == np.max(x_pool))
-                        data[n, c, h * s:h * s + l1, w * s:w * s + l1] = mask * self.output_activations[n, c, h, w]
+                        data[n, c, h * s:h * s + l1, w * s:w * s + l1] = mask * self.output_activations.gradients[n, c, h, w]
         self.input_activations.gradients = data
