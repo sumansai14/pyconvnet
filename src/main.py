@@ -6,27 +6,13 @@ from datasets import MNISTDataSet
 from layers import Layers, Activations
 from estimator import Estimator
 import numpy as np
-import ipdb as pdb
 
 
 def transform_data(x, y):
-    # print(x.shape)
-    # print(x[0])
-    # x = x.reshape(784, x.shape[0]).T.reshape(784, x.shape[0]) / 255
-    # print(x[0].shape)
-    # x = x.T
-    # print(x.shape)
-    # print(x[0].shape)
-    # print(x[0])
-    # pdb.set_trace()
-    # y =
-    # print(x.shape)
     x = np.reshape(x, (x.shape[0], 1, x.shape[1], x.shape[2]))
     y = onehot(y, 10)
-    # print(y.shape)
-    # y = np.reshape(y, (y.shape[0], y.shape[1], 1, 1))
-    # print(x.shape, y.shape)
     return x, y
+
 
 if __name__ == '__main__':
     mnist = MNISTDataSet()
