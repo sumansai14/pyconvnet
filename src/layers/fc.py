@@ -1,6 +1,6 @@
 from .baselayer import Layer
-from .vector import Vector
 import numpy as np
+from pyconvnet.utils import Vector
 
 
 class FullyConnectedLayer(Layer):
@@ -24,7 +24,7 @@ class FullyConnectedLayer(Layer):
         self.output_activations = Vector()
 
     def forward(self, x, is_training):
-        print(x.data.shape)
+        # print(x.data.shape)
         if len(x.data.shape) == 4:
             # This is a hack - this is coming from a conv. Flatten it.
             self.input_activations.data = x.data.reshape(x.data.shape[0], x.data.shape[1])

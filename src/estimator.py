@@ -1,6 +1,6 @@
 import numpy as np
 import logging
-
+# from layers.v
 
 class Estimator(object):
     """
@@ -30,14 +30,21 @@ class Estimator(object):
     def train(self, epochs):
         for epoch in range(epochs):
             mini_batches = self.dataset.batches(self.optimizer.batch_size)
+            train_loss = 0
+            train_acc = 0
             for step, batch in enumerate(mini_batches):
                 x, y = self.transformer(*batch)
                 output = self.network.forward(x)  # Predict
                 accuracy, loss = self.network.loss(output, y)  # Cal'c Loss
+                train_acc += accuracy
+                train_loss += loss
                 self.network.backward(output, y)  # Backword Prop
                 self.optimizer.step()  # Update Gradients
                 self.optimizer.zero_grad()  # Zero gradients
-            self.logger.info('TRAIN: Completed epoch {epoch} with accuracy {accuracy}% and loss {loss.data}'.format(epoch=epoch, accuracy=(accuracy * 100), loss=loss))
+            # Here we have to accumulate the training accuracy across all the steps.
+            train_acc /= step
+            train_loss /= step
+            self.logger.info('TRAIN: Completed epoch {epoch} with accuracy {accuracy}% and loss {loss.data}'.format(epoch=epoch, accuracy=(train_acc * 100), loss=train_loss))
             if self.dataset.valid:
                 valid = self.dataset.valid
                 valid_x, valid_y = self.transformer(*valid)
