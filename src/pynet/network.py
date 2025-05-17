@@ -1,7 +1,7 @@
 """Definition of network class can be found in this file. WIll add a lot of todos later."""
 from __future__ import absolute_import
-from pyconvnet.layers import Layers
-from pyconvnet.loss import MSELoss
+from pynet.layers import Layers
+from pynet.loss import MSELoss
 
 
 class Network(object):

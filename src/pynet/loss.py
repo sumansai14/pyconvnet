@@ -1,5 +1,5 @@
 r"""For now, we implement only a single loss per network. We'll take care of multi task learning later."""
-from pyconvnet.layers.vector import Vector
+from pynet.layers.vector import Vector
 import numpy as np
 
 

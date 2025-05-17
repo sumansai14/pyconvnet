@@ -1,4 +1,4 @@
-### pyconvnet ###
+### pynet ###
 
 A Neural network library primarily to learn differentiable programming (Would not be restricted to just neural networks though) in python inspired from karapathys convnetjs, some nice features from tensorflow and torch/pytorch's autograd structure. (Tried to get the best of all worlds). Please check `main.py` to see how to implement a basic neural network.
 
@@ -15,16 +15,16 @@ The project is structured as follows:
 Implemented a Minibatch SGD (which takes batch size and learning rates as hyperparameters and updates parameters).
 
 ## Datasets
-The idea of datasets like in every other library is to have standard datasets available. Non standard datasets can also be implemented by subclassing `pyconvnet.datasets.Dataset`. In the future, we'd like to add some nice properties to this which would make it easier to work with estimators (dimensions et al)
+The idea of datasets like in every other library is to have standard datasets available. Non standard datasets can also be implemented by subclassing `pynet.datasets.Dataset`. In the future, we'd like to add some nice properties to this which would make it easier to work with estimators (dimensions et al)
 
-1. Every dataset should be a subclass of `pyconvnet.datasets.Dataset` and expose `train`, `test` and `valid` splits in the corresponding variables.
+1. Every dataset should be a subclass of `pynet.datasets.Dataset` and expose `train`, `test` and `valid` splits in the corresponding variables.
 2. Implemented a MNISTDataset (http://yann.lecun.com/exdb/mnist/).
 
 ## Losses
 
 ## Estimators
 
-This is losely based on tensorflow's estimator sturcture. Estimators are capable of working directly with instances of `pyconvnet.datasets.Dataset` (How cool is that!).
+This is losely based on tensorflow's estimator sturcture. Estimators are capable of working directly with instances of `pynet.datasets.Dataset` (How cool is that!).
 Estimators take a network, dataset, optimizer and do the following.
 1. Transforms the dataset in a way that networks can consume them. 
     * Good to have - validate the dimensions of the network. 

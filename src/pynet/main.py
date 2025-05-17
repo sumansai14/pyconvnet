@@ -1,10 +1,10 @@
 from __future__ import absolute_import
-from pyconvnet.optimizers import MiniBatchGradientDescent
-from pyconvnet.utils.transforms import onehot
-from pyconvnet.network import Network
-from pyconvnet.datasets import MNISTDataSet
-from pyconvnet.layers import Layers, Activations
-from pyconvnet.estimator import Estimator
+from pynet.optimizers import MiniBatchGradientDescent
+from pynet.utils.transforms import onehot
+from pynet.network import Network
+from pynet.datasets import MNISTDataSet
+from pynet.layers import Layers, Activations
+from pynet.estimator import Estimator
 import numpy as np
 
 
