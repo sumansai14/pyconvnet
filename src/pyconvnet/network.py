@@ -1,7 +1,7 @@
 """Definition of network class can be found in this file. WIll add a lot of todos later."""
 from __future__ import absolute_import
-from layers import Layers
-from loss import MSELoss
+from pyconvnet.layers import Layers
+from pyconvnet.loss import MSELoss
 
 
 class Network(object):
@@ -15,7 +15,7 @@ class Network(object):
         """
         self.layers = []
         self.loss_function = loss()
-        if layers[0]['type'] != Layers.INPUT:
+        if layers[0]['type'] is not Layers.INPUT:
             raise ValueError("the first layer must be input layer")
         for idx, layer in enumerate(layers):
             self.layers.append(layer['type'].value(**layer))

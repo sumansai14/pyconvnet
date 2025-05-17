@@ -31,7 +31,7 @@ class ConvLayer(Layer):
         output_shape = (x.shape[0], self.fshape[0], int(height), int(width))
         data = np.zeros(output_shape)
         p = self.padding
-        x_pad = np.lib.pad(x.data, ((0, 0), (0, 0), (p, p), (p, p)), 'constant', constant_values=0)
+        x_pad = np.pad(x.data, ((0, 0), (0, 0), (p, p), (p, p)), 'constant', constant_values=0)
         for n in range(x.data.shape[0]):
             for f in range(self.fshape[0]):
                 for h in range(0, x.data.shape[2], self.stride):
@@ -52,7 +52,7 @@ class ConvLayer(Layer):
         """
         p = self.padding
         x = self.input_activations
-        x_pad = np.lib.pad(x.data, ((0, 0), (0, 0), (p, p), (p, p)), 'constant', constant_values=0)
+        x_pad = np.pad(x.data, ((0, 0), (0, 0), (p, p), (p, p)), 'constant', constant_values=0)
         x_gradients = np.zeros(x_pad.shape)
         w_gradients = np.zeros(self.fweights.shape)
         b_gradients = np.zeros(self.fbiases.shape)
@@ -62,8 +62,8 @@ class ConvLayer(Layer):
                     for w in range(0, x.data.shape[3], self.stride):
                         x_gradients[n, :, h:h + self.fshape[2], w:w + self.fshape[3]] += self.output_activations.gradients[n, f, int(h / self.stride), int(w / self.stride)] * self.fweights.data[f, :, :, :]
         # Delete Padding to match shapes
-        delete_height = np.array(range(self.padding)) + np.array(range(x.shape[2] + self.padding, x.shape[2] + (2 * self.padding), 1))
-        delete_width = np.array(range(self.padding)) + np.array(range(x.shape[3] + self.padding, x.shape[3] + (2 * self.padding), 1))
+        delete_height = np.array(range(self.padding), dtype=int) + np.array(range(x.shape[2] + self.padding, x.shape[2] + (2 * self.padding), 1), dtype=int)
+        delete_width = np.array(range(self.padding), dtype=int) + np.array(range(x.shape[3] + self.padding, x.shape[3] + (2 * self.padding), 1), dtype=int)
         np.delete(x_gradients, delete_height, axis=2)
         np.delete(x_gradients, delete_width, axis=3)
         for n in range(self.input_activations.shape[0]):

@@ -42,18 +42,20 @@ class Dataset(object):
 
 
 class MNISTDataSet(Dataset):
-    absolute_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # ideally we want to make this cache path that is configurable and download data there.
+    absolute_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     data_path = 'data/mnist/'
     urls = [
-        'http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz',
-        'http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz',
-        'http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz',
-        'http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz'
+        'https://storage.googleapis.com/cvdf-datasets/mnist/train-images-idx3-ubyte.gz',
+        'https://storage.googleapis.com/cvdf-datasets/mnist/train-labels-idx1-ubyte.gz',
+        'https://storage.googleapis.com/cvdf-datasets/mnist/t10k-images-idx3-ubyte.gz',
+        'https://storage.googleapis.com/cvdf-datasets/mnist/t10k-labels-idx1-ubyte.gz'
     ]
 
     @property
     def data(self):
         file_name = self.urls[0].split('/')[-1]
+        print(f"file name {file_name}")
         if not os.path.exists(os.path.join(self.absolute_path, self.data_path, file_name)):
             print("Data is not present, Downloading now...")
             self.fetch_data()
@@ -117,6 +119,8 @@ class MNISTDataSet(Dataset):
                 with open(os.path.join(self.absolute_path, self.data_path, file_name), 'wb') as f:
                     for chunk in r.iter_content(1024):
                         f.write(chunk)
+            else:
+                raise ("Failed to download the dataset")
 
     def randomize(self, axis=0):
         permuation = np.random.permutation(self.train[0].shape[axis])

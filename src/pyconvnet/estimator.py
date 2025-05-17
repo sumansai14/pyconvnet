@@ -41,19 +41,20 @@ class Estimator(object):
                 self.network.backward(output, y)  # Backword Prop
                 self.optimizer.step()  # Update Gradients
                 self.optimizer.zero_grad()  # Zero gradients
+                self.logger.info(f'STEP {step}: Loss {loss}')
             # Here we have to accumulate the training accuracy across all the steps.
             train_acc /= step
             train_loss /= step
-            self.logger.info('TRAIN: Completed epoch {epoch} with accuracy {accuracy}% and loss {loss.data}'.format(epoch=epoch, accuracy=(train_acc * 100), loss=train_loss))
+            self.logger.info('TRAIN: Completed epoch {epoch} with accuracy {accuracy}% and loss {loss}'.format(epoch=epoch, accuracy=(train_acc * 100), loss=train_loss))
             if self.dataset.valid:
                 valid = self.dataset.valid
                 valid_x, valid_y = self.transformer(*valid)
                 valid_acc, valid_loss = self.network.loss(self.network.forward(valid_x), valid_y)
-            self.logger.info('VALID: Completed epoch for {epoch} with accuracy {accuracy}% and loss {loss.data}'.format(epoch=epoch, accuracy=(valid_acc * 100), loss=valid_loss))
+            self.logger.info('VALID: Completed epoch for {epoch} with accuracy {accuracy}% and loss {loss}'.format(epoch=epoch, accuracy=(valid_acc * 100), loss=valid_loss))
 
     def test(self):
         test = self.dataset.test
         x, y = self.transformer(*test)
         output = self.network.forward(x)  # Predict
         accuracy, loss = self.network.loss(output, y)  # Cal'c Loss
-        self.logger.info('TEST: Model trained with test accuracy {accuracy}% and loss {loss.data}'.format(accuracy=(accuracy * 100), loss=loss))
+        self.logger.info('TEST: Model trained with test accuracy {accuracy}% and loss {loss}'.format(accuracy=(accuracy * 100), loss=loss))

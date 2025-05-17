@@ -1,6 +1,6 @@
 from .baselayer import Layer
 import numpy as np
-from pyconvnet.utils import Vector
+from .vector import Vector
 
 
 class FullyConnectedLayer(Layer):

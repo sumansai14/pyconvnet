@@ -1,0 +1,20 @@
+[project]
+name = "pyconvnet"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Sai Suman Prayaga", email = "suman.sai14@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "ipython>=9.2.0",
+    "jupyter>=1.1.1",
+    "matplotlib>=3.10.3",
+    "numpy>=2.2.5",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
