@@ -41,7 +41,6 @@ class Estimator(object):
                 self.network.backward(output, y)  # Backword Prop
                 self.optimizer.step()  # Update Gradients
                 self.optimizer.zero_grad()  # Zero gradients
-                self.logger.info(f'STEP {step}: Loss {loss}')
             # Here we have to accumulate the training accuracy across all the steps.
             train_acc /= step
             train_loss /= step

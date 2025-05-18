@@ -42,7 +42,7 @@ if __name__ == '__main__':
     ]
 
     network = Network(layers)
-    optimizer = MiniBatchGradientDescent(network, learning_rate=0.01, batch_size=16)
+    optimizer = MiniBatchGradientDescent(network, learning_rate=0.1, batch_size=64)
     estimator = Estimator(network=network, optimizer=optimizer, dataset=mnist, transformer=transform_data_conv)
     estimator.train(epochs=30)
     estimator.test()

@@ -62,6 +62,8 @@ class MNISTDataSet(Dataset):
         return self.load_data()
 
     def load_data(self):
+        if not os.path.exists(os.path.join(self.absolute_path, self.data_path)):
+            self.fetch_data()
         if len(os.listdir(os.path.join(self.absolute_path, self.data_path))) != 4:
             raise IOError("dataset not found")
         else:
